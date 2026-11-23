@@ -10,8 +10,8 @@ Use Node.js 22 or newer. Run `npm ci`, `npm run check`, `npx playwright install 
 
 1. Pin the Playground SHA in the Test PR, review the diff and require successful checks. Verify the selected Test build at its separate workers.dev URL, including the robots header, assets, links and the browser privacy audit.
 2. Open a Main PR from the verified Test revision. Keep the Main Worker configuration and review any environment-specific changes. Record the Test SHA, GitHub Actions results and remaining launch issues in the PR.
-3. Obtain explicit owner approval of the exact Main commit before releasing it. The manual workflow takes the full approved SHA and checks it against the selected main branch revision. Use the protected GitHub `production` environment with an owner reviewer, a scoped Workers credential and the verified Cloudflare account ID. Provide those credentials only through environment settings.
-4. Keep the Main Worker private during preparation. Both workers.dev and version URLs are disabled in Wrangler. The initial setup has no custom domains or routes. Approval and domain setup are separate launch decisions.
+3. Obtain explicit owner approval of the exact Main commit before releasing it. The manual workflow requires the repository owner to dispatch the full approved SHA and checks it against the selected main branch revision. Use the protected GitHub `production` environment with an owner reviewer, a scoped Workers credential and the verified Cloudflare account ID. Provide those credentials only through environment settings.
+4. Keep the Main Worker private during preparation. Both workers.dev and version URLs are disabled in Wrangler. The Cloudflare Worker has been provisioned without an active deployment, custom domains or routes. Approval and domain setup are separate launch decisions.
 
 ## SEO and privacy at launch
 
