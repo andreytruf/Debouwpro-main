@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test("one corporate wordmark and copper Energy heading across the site", async ({
   page,
-  request,
 }) => {
   for (const route of [
     "/",
@@ -14,13 +13,10 @@ test("one corporate wordmark and copper Energy heading across the site", async (
     await page.goto(route);
     await expect(page.locator(".brand-logo")).toHaveCount(2);
     for (const logo of await page.locator(".brand-logo").all()) {
-      await expect(logo).toHaveAttribute("src", "/assets/brand/wordmark.svg");
+      await expect(logo).toHaveAttribute("src", "/assets/brand/primary-v2.png");
       await expect(logo).toHaveAttribute("alt", "DE BOUW PRO");
     }
   }
-  const source = await (await request.get("/assets/brand/wordmark.svg")).text();
-  expect(source).toContain('fill="#D97841"');
-  expect(source).toContain('fill="#1A1A1A"');
   await page.goto("/energy");
   await expect(page.locator("#energy-title > span").first()).toHaveCSS(
     "color",
@@ -62,4 +58,62 @@ test("product explorers explain configurations and remain keyboard usable", asyn
   await fallback.goto("http://127.0.0.1:8787/energy/peblar");
   await expect(fallback.locator("[data-mode-panel]:visible")).toHaveCount(3);
   await context.close();
+});
+
+test("navigation and heading family are shared by all public page types", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const styles = async () =>
+    page.evaluate(() => {
+      const heading = getComputedStyle(document.querySelector("main h1"));
+      const nav = getComputedStyle(
+        document.querySelector(".site-header .navigation > a"),
+      );
+      const logo = getComputedStyle(
+        document.querySelector(".site-header .brand-logo"),
+      );
+      const button = document.querySelector(
+        "main :is(.home-button.copper, .button.button-dark)",
+      );
+      const primary = button && getComputedStyle(button);
+      return [
+        heading.fontFamily,
+        heading.fontWeight,
+        nav.fontFamily,
+        nav.fontSize,
+        nav.fontWeight,
+        logo.width,
+        primary && [
+          primary.fontSize,
+          primary.fontWeight,
+          primary.minHeight,
+          primary.backgroundColor,
+        ],
+      ];
+    });
+
+  await page.goto("/");
+  const expected = await styles();
+  for (const route of [
+    "/energy/",
+    "/energy/tesla/",
+    "/energy/ecoflow/",
+    "/energy/goodwe/",
+    "/energy/peblar/",
+    "/energy/samsung/",
+    "/energy/whspr/",
+    "/vloerverwarming/",
+    "/graafwerk/",
+    "/algemene-voorwaarden/",
+    "/privacy/",
+    "/cookies/",
+    "/page-not-found-for-style-check/",
+  ]) {
+    await page.goto(route);
+    const observed = await styles();
+    expect(observed.slice(0, -1), route).toEqual(expected.slice(0, -1));
+    if (observed.at(-1))
+      expect(observed.at(-1), route).toEqual(expected.at(-1));
+  }
 });

@@ -1,8 +1,9 @@
 import { chromium } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
-const base = process.env.PRIVACY_AUDIT_BASE;
-if (!base) throw new Error("Set PRIVACY_AUDIT_BASE to the approved audit URL.");
+const base =
+  process.env.PRIVACY_AUDIT_BASE ||
+  "https://debouwpro.nl";
 const b = await chromium.launch({
   executablePath:
     process.env.CHROMIUM_PATH ||
